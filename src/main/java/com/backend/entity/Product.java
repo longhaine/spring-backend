@@ -1,5 +1,7 @@
 package com.backend.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -7,6 +9,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity(name ="product")
 public class Product {
@@ -18,9 +23,34 @@ public class Product {
 	@Column(name="name")
 	private String name;
 	
+	@Column(name="gender")
+	private String gender;
+	
 	@ManyToOne
-	@JoinColumn(name ="subcategory_id")
+	@JoinColumn(name="subcategory_id")
 	private SubCategory subCategory;
+	
+	@JsonManagedReference
+	@OneToMany(mappedBy = "product")
+	private List<ProductOption> productOptions;
+	
+	
+	
+	public String getGender() {
+		return gender;
+	}
+
+	public List<ProductOption> getProductOptions() {
+		return productOptions;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
+	public void setProductOptions(List<ProductOption> productOptions) {
+		this.productOptions = productOptions;
+	}
 
 	public int getId() {
 		return id;
@@ -30,8 +60,13 @@ public class Product {
 		return name;
 	}
 
+
 	public SubCategory getSubCategory() {
 		return subCategory;
+	}
+
+	public void setSubCategory(SubCategory subCategory) {
+		this.subCategory = subCategory;
 	}
 
 	public void setId(int id) {
@@ -42,9 +77,7 @@ public class Product {
 		this.name = name;
 	}
 
-	public void setSubCategory(SubCategory subCategory) {
-		this.subCategory = subCategory;
-	}
+
 	
 	
 }

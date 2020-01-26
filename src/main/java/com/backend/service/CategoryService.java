@@ -1,6 +1,7 @@
 package com.backend.service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ public class CategoryService {
 	
 	@Autowired
 	private CategoryRepository categoryRepository;
-	
+
 	public ArrayList<CategoryByGenderResponse> findAll(){
 		ArrayList<CategoryByGenderResponse> result = new ArrayList<>();
 		ArrayList<Category> list = categoryRepository.findAll();
@@ -27,16 +28,11 @@ public class CategoryService {
 			Category categoryClone2 = new Category(category.getId(), category.getName()); //for men
 			List<SubCategory> subCategories = category.getSubCategories();
 			for(SubCategory subCategory : subCategories) {
-				if(subCategory.getGender().equals("unisex"))
-				{
-					categoryClone1.getSubCategories().add(subCategory);
-					categoryClone2.getSubCategories().add(subCategory);
-				}
-				else if(subCategory.getGender().equals("women"))
+				if(subCategory.getGender().equals("both")||subCategory.getGender().equals("women"))
 				{
 					categoryClone1.getSubCategories().add(subCategory);
 				}
-				else
+				if(subCategory.getGender().equals("both")||subCategory.getGender().equals("men"))
 				{
 					categoryClone2.getSubCategories().add(subCategory);
 				}
@@ -48,4 +44,5 @@ public class CategoryService {
 		result.add(new CategoryByGenderResponse("men", listOfMen));
 		return result;
 	}
+
 }

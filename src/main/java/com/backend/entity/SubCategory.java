@@ -1,5 +1,8 @@
 package com.backend.entity;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -29,6 +32,16 @@ public class SubCategory {
 	@JoinColumn(name ="category_id")
 	private Category category;
 
+
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
+	}
+
 	public int getId() {
 		return id;
 	}
@@ -37,9 +50,6 @@ public class SubCategory {
 		return name;
 	}
 
-	public String getGender() {
-		return gender;
-	}
 
 	public Category getCategory() {
 		return category;
@@ -53,9 +63,7 @@ public class SubCategory {
 		this.name = name;
 	}
 
-	public void setGender(String gender) {
-		this.gender = gender;
-	}
+
 
 	public void setCategory(Category category) {
 		this.category = category;

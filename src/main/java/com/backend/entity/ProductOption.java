@@ -8,6 +8,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity(name ="product_option")
 public class ProductOption {
 	
@@ -24,9 +26,22 @@ public class ProductOption {
 	@Column(name ="image")
 	private String image;
 	
+	@Column(name="number_of_image")
+	private int numberOfImage;
+	
+	@JsonBackReference
 	@ManyToOne
 	@JoinColumn(name ="product_id")
 	private Product product;
+
+	
+	public int getNumberOfImage() {
+		return numberOfImage;
+	}
+
+	public void setNumberOfImage(int numberOfImage) {
+		this.numberOfImage = numberOfImage;
+	}
 
 	public int getId() {
 		return id;
