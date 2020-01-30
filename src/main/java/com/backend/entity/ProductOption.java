@@ -20,6 +20,9 @@ public class ProductOption {
 	@Column(name = "name")
 	private String name;
 	
+	@Column(name ="color")
+	private String color;
+	
 	@Column(name ="price")
 	private float price;
 	
@@ -81,6 +84,14 @@ public class ProductOption {
 
 	public void setProduct(Product product) {
 		this.product = product;
+	}
+
+	public String getColor() {
+		return color;
+	}
+
+	public void setColor(String color) {
+		this.color = color;
 	}
 	
 }

@@ -45,6 +45,10 @@ public class PermitController {
 	@GetMapping("/productByGenderAndSubcategory/{gender}/{subCategoryName}")
 	public List<Product> productByGenderAndSubcategory(@PathVariable("gender")String gender, @PathVariable("subCategoryName")String subCategoryName){
 		try {
+			// because T-shirts has '-'
+			if(!subCategoryName.equals("T-Shirts")) {
+				subCategoryName = subCategoryName.replace("-"," ");
+			}
 			SubCategory subCategory = subCategoryService.findByGenderAndName(gender, subCategoryName);
 			return productRepository.findByGenderAndSubCategory(gender, subCategory);
 		}
