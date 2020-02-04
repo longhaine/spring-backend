@@ -1,5 +1,6 @@
 package com.backend.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
@@ -12,6 +13,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity(name = "user")
 public class User {
@@ -38,6 +41,16 @@ public class User {
 	@ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
 	@JoinTable(name = "user_role",joinColumns = {@JoinColumn(name = "user_id")},inverseJoinColumns = {@JoinColumn(name ="role_id")})
 	private List<Role> roles;
+	
+	
+	public User() {}
+	
+	public User(String email, String password) {
+		this.email = email;
+		this.password = password;
+		this.roles = new ArrayList<Role>();
+	}
+	
 	
 	public List<Role> getRoles() {
 		return roles;

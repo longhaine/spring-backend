@@ -53,8 +53,7 @@ public class PermitController {
 			return productRepository.findByGenderAndSubCategory(gender, subCategory);
 		}
 		catch(Exception e) {
-			e.getMessage();
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+			throw new IllegalArgumentException();
 		}
 	}
 

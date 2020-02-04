@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity(name ="role")
 public class Role {
 	
@@ -19,6 +21,7 @@ public class Role {
 	@Column(name = "name")
 	private String name;
 	
+	@JsonBackReference
 	@ManyToMany(mappedBy = "roles")
 	private List<User> users;
 
