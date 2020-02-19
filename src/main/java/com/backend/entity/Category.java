@@ -34,7 +34,7 @@ public class Category {
 		this.subCategories = new ArrayList<SubCategory>();
 	}
 	@JsonManagedReference
-	@OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch=FetchType.EAGER)
+	@OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch=FetchType.LAZY)
 	private List<SubCategory> subCategories;
 	
 	public List<SubCategory> getSubCategories() {

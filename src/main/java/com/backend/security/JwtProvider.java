@@ -14,7 +14,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtProvider {
 	private final String secretKey = "everlane";
-	private final long expiration = 6000000L;
+	private final long expiration = 10*86400*1000L;
 	
 	public String generateToken(String email) {
 		Date now = new Date();
@@ -38,7 +38,7 @@ public class JwtProvider {
 		}catch(JwtException ex) {
 			System.out.println(ex.getClass());
 			System.out.println(ex.getMessage());
+			throw ex;
 		}
-		return false;
 	}
 }

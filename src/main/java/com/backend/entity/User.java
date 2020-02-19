@@ -13,7 +13,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity(name = "user")
@@ -43,6 +45,10 @@ public class User {
 	private List<Role> roles;
 	
 	
+	@JsonIgnoreProperties("user")
+	@OneToMany(mappedBy = "user")
+	private List<Address> addresses;
+	
 	public User() {}
 	
 	public User(String email, String password) {
@@ -51,6 +57,20 @@ public class User {
 		this.roles = new ArrayList<Role>();
 	}
 	
+	public User(String email, String password,String fullName) {
+		this.email = email;
+		this.password = password;
+		this.fullName = fullName;
+		this.roles = new ArrayList<Role>();
+	}
+	
+	public List<Address> getAddresses() {
+		return addresses;
+	}
+
+	public void setAddresses(List<Address> addresses) {
+		this.addresses = addresses;
+	}	
 	
 	public List<Role> getRoles() {
 		return roles;

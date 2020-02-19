@@ -20,11 +20,7 @@ public class UserOrderDetail {
 	private UserOrder order;
 	
 	@ManyToOne
-	@JoinColumn(name ="product_id")
-	private Product product;
-	
-	@ManyToOne
-	@JoinColumn(name = "product_optiop_id")
+	@JoinColumn(name = "product_option_id")
 	private ProductOption productOption;
 	
 	@Column(name ="quantity")
@@ -41,9 +37,6 @@ public class UserOrderDetail {
 		return order;
 	}
 
-	public Product getProduct() {
-		return product;
-	}
 
 	public ProductOption getProductOption() {
 		return productOption;
@@ -63,10 +56,6 @@ public class UserOrderDetail {
 
 	public void setOrder(UserOrder order) {
 		this.order = order;
-	}
-
-	public void setProduct(Product product) {
-		this.product = product;
 	}
 
 	public void setProductOption(ProductOption productOption) {

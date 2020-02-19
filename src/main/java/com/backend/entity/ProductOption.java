@@ -9,6 +9,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity(name ="product_option")
 public class ProductOption {
@@ -32,7 +33,7 @@ public class ProductOption {
 	@Column(name="number_of_image")
 	private int numberOfImage;
 	
-	@JsonBackReference
+	@JsonIgnoreProperties("productOptions")
 	@ManyToOne
 	@JoinColumn(name ="product_id")
 	private Product product;

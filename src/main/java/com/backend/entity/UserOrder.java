@@ -15,11 +15,14 @@ public class UserOrder {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private int id;
 	
-	@Column(name = "code")
-	private String code;
+	@Column(name = "order_number")
+	private int orderNumber;
 	
 	@Column(name ="price")
 	private float price;
+
+	@Column(name= "fullname")
+	private String fullName;
 	
 	@Column(name = "address")
 	private String address;
@@ -27,8 +30,11 @@ public class UserOrder {
 	@Column(name ="phone")
 	private String phone;
 	
-	@Column(name ="session_id")
-	private String sessionId;
+	@Column(name="payment")
+	private String payment;
+	
+	@Column(name = "date")
+	private String date;
 	
 	@ManyToOne
 	@JoinColumn(name ="user_id")
@@ -36,10 +42,6 @@ public class UserOrder {
 
 	public int getId() {
 		return id;
-	}
-
-	public String getCode() {
-		return code;
 	}
 
 	public float getPrice() {
@@ -54,20 +56,12 @@ public class UserOrder {
 		return phone;
 	}
 
-	public String getSessionId() {
-		return sessionId;
-	}
-
 	public User getUser() {
 		return user;
 	}
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
 	}
 
 	public void setPrice(float price) {
@@ -82,13 +76,42 @@ public class UserOrder {
 		this.phone = phone;
 	}
 
-	public void setSessionId(String sessionId) {
-		this.sessionId = sessionId;
-	}
 
 	public void setUser(User user) {
 		this.user = user;
 	}
-	
+
+
+	public String getFullName() {
+		return fullName;
+	}
+
+	public String getPayment() {
+		return payment;
+	}
+
+	public String getDate() {
+		return date;
+	}
+
+	public void setFullName(String fullName) {
+		this.fullName = fullName;
+	}
+
+	public void setPayment(String payment) {
+		this.payment = payment;
+	}
+
+	public void setDate(String date) {
+		this.date = date;
+	}
+
+	public int getOrderNumber() {
+		return orderNumber;
+	}
+
+	public void setOrderNumber(int orderNumber) {
+		this.orderNumber = orderNumber;
+	}
 	
 }

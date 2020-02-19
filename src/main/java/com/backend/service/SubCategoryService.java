@@ -16,11 +16,6 @@ public class SubCategoryService {
 	@Autowired
 	private SubCategoryRepository subCategoryRepository;
 	
-	public ArrayList<SubCategory> findAll(){
-		ArrayList<SubCategory> list = new ArrayList<SubCategory>();
-		subCategoryRepository.findAll().forEach(list::add);
-		return list;
-	}
 	public SubCategory findByGenderAndName(String gender, String name) {
 		Optional<SubCategory> subCategory = subCategoryRepository.findByGenderAndName(gender, name);
 		if(subCategory.isPresent()) {
