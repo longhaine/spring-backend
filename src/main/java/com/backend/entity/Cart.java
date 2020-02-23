@@ -10,18 +10,16 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
-import org.hibernate.annotations.Formula;
-
 @Entity(name ="cart")
 public class Cart {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	@ManyToOne
-	@JoinColumn(name="product_option_id")
-	private ProductOption productOption;
+	@JoinColumn(name="option_size_id")
+	private OptionWithSize optionWithSize;
 	
 	@Column(name="quantity")
 	private int quantity;
@@ -39,32 +37,28 @@ public class Cart {
 	
 	public Cart() {}
 	
-	public Cart(ProductOption productOption, String sessionId) {
-		this.productOption = productOption;
+	public Cart(OptionWithSize optionWithSize, String sessionId) {
+		this.optionWithSize = optionWithSize;
 		this.sessionId = sessionId;
 		this.quantity = 1;
-		this.price = productOption.getPrice();
+		this.price = optionWithSize.getProductOption().getPrice();
 	}
 	
-	public Cart(ProductOption productOption, User user) {
-		this.productOption = productOption;
+	public Cart(OptionWithSize optionWithSize, User user) {
+		this.optionWithSize = optionWithSize;
 		this.quantity = 1;
-		this.price = productOption.getPrice();
+		this.price = optionWithSize.getProductOption().getPrice();
 		this.user = user;
 	}
 	
 	@PreUpdate
 	@PrePersist
 	private void prePersist() {
-		this.price = this.productOption.getPrice() * this.quantity;
+		this.price = this.optionWithSize.getProductOption().getPrice() * this.quantity;
 	}
 	
 	public int getId() {
 		return id;
-	}
-
-	public ProductOption getProductOption() {
-		return productOption;
 	}
 
 	public int getQuantity() {
@@ -87,10 +81,6 @@ public class Cart {
 		this.id = id;
 	}
 
-	public void setProductOption(ProductOption productOption) {
-		this.productOption = productOption;
-	}
-
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
@@ -106,6 +96,15 @@ public class Cart {
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
 	}
+
+	public OptionWithSize getOptionWithSize() {
+		return optionWithSize;
+	}
+
+	public void setOptionWithSize(OptionWithSize optionWithSize) {
+		this.optionWithSize = optionWithSize;
+	}
+	
 	
 	
 }

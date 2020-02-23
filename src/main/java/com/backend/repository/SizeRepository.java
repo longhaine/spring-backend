@@ -1,11 +1,13 @@
 package com.backend.repository;
 
+import java.util.List;
+
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Repository;
 
-import com.backend.entity.User;
+import com.backend.entity.Size;
 
 @Repository
-public interface UserRepository extends CrudRepository<User, Integer>{
-	User findByEmail(String email);
+public interface SizeRepository extends CrudRepository<Size, Integer>{
+	List<Size> findAll();
 }

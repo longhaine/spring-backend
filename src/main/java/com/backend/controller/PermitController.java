@@ -6,24 +6,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
+import com.backend.entity.OptionWithSize;
 import com.backend.entity.Product;
+import com.backend.entity.ProductOption;
+import com.backend.entity.Size;
 import com.backend.entity.SubCategory;
-import com.backend.repository.CategoryRepository;
+import com.backend.repository.OptionWithSizeRepository;
 import com.backend.repository.ProductRepository;
-import com.backend.repository.SubCategoryRepository;
+import com.backend.repository.SizeRepository;
 import com.backend.service.CategoryService;
+import com.backend.service.ProductService;
 import com.backend.service.SubCategoryService;
 import com.backend.service.UserService;
 
@@ -39,6 +44,8 @@ public class PermitController {
 	private SubCategoryService subCategoryService;
 	@Autowired
 	private ProductRepository productRepository;
+	@Autowired
+	private ProductService productService;
 	
 	@Autowired
 	private UserService userService;
@@ -91,22 +98,57 @@ public class PermitController {
 		}
 		return body;
 	}
-	
-	// test section
-	@Autowired
-	private SubCategoryRepository subCategoryRepository;
-	@Autowired
-	private CategoryRepository categoryRepository;
-	@GetMapping("/test")
-	public Object test() {
-		return categoryService.loadHeader();
-	}
-	// test section
-	@GetMapping("/subCategoryByGender/{gender}")
-	public List<SubCategory> subCategoryByGender(@PathVariable("gender")String gender){
-		if(gender.equals("men") || gender.equals("women")) {
-			return subCategoryService.findByGender(gender);
+	@GetMapping("/product/{link}")
+	public Product getProductHasProductOptionLink(@PathVariable String link) {
+		Optional<Product> productOpt = productService.getByProductOptionLink(link);
+		if(productOpt.isPresent()) {
+			return productOpt.get();
 		}
-		throw new ResponseStatusException(HttpStatus.NOT_FOUND,"there is no gender such as "+gender);
+		throw new IllegalArgumentException();
+	}
+	
+	@Autowired
+	private SizeRepository sizeRepository;
+	
+	@Autowired
+	private OptionWithSizeRepository optionWithSizeRepository;
+	
+//	@GetMapping("/add") this request only for adding size for product 
+	public void add() {
+		int count = 0;
+		List<OptionWithSize> optionWithSizes = new ArrayList<>();
+		for(int j = 8 ; j < 18 ;j++ ) { // size range for particular products, see in database
+			Size size = (sizeRepository.findById(j)).get();
+			OptionWithSize optionWithSize = new OptionWithSize();
+			optionWithSize.setSize(size);
+			optionWithSizes.add(optionWithSize);
+		}
+		int length2 = optionWithSizes.size();
+		for(int i = 17; i < 23 ; i++) // range of products that list of size above apply to
+		{
+			Product product = (productRepository.findById(i)).get();
+			List<ProductOption> productOptions = product.getProductOptions();
+			int length = productOptions.size();
+
+			
+			for(int k = 0; k < length ; k++)
+			{
+				ProductOption productOption = productOptions.get(k);
+				System.out.println("productOption ID:" +productOption.getId());
+				for(int l = 0 ; l < length2 ;l++) 
+				{
+					OptionWithSize optionWithSize = optionWithSizes.get(l);
+					OptionWithSize optionWithSizeNew = new OptionWithSize();
+					optionWithSizeNew.setProductOption(productOption);
+					optionWithSizeNew.setSize(optionWithSize.getSize());
+					optionWithSizeNew.setQuantity(ThreadLocalRandom.current().nextInt(0, 50 + 1));
+					optionWithSizeRepository.save(optionWithSizeNew);
+					count++;
+				}
+				
+			}
+			
+		}
+		System.out.println("count: "+count);
 	}
 }

@@ -11,15 +11,20 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.backend.entity.Cart;
-import com.backend.entity.ProductOption;
+import com.backend.entity.OptionWithSize;
 import com.backend.entity.User;
 
 @Repository
 public interface CartRepository extends CrudRepository<Cart,Integer>{
-	List<Cart> findBySessionId(String sessionId);
-	List<Cart> findByUser(User user);
-	Cart findByProductOptionAndSessionId(ProductOption productOption, String sessionId);
-	Cart findByProductOptionAndUser(ProductOption productOption,User user);
+	
+	@Query(value = "SELECT c FROM cart c WHERE c.sessionId = :sessionId ORDER BY c.id DESC")
+	List<Cart> findBySessionId(@Param("sessionId")String sessionId);
+	
+	@Query(value = "SELECT c FROM cart c WHERE c.user = :user ORDER BY c.id DESC")
+	List<Cart> getCartsByUser(@Param("user")User user);
+	
+	Cart findByOptionWithSizeAndSessionId(OptionWithSize optionWithSize, String sessionId);
+	Cart findByOptionWithSizeAndUser(OptionWithSize optionWithSize,User user);
 	Cart findByIdAndSessionId(int id, String sessionId);
 	Cart findByIdAndUser(int id, User user);
 	
@@ -27,9 +32,9 @@ public interface CartRepository extends CrudRepository<Cart,Integer>{
 	@Modifying
 	@Query(value = "UPDATE cart c SET c.quantity = c.quantity + :quantity, "
 			+ "c.price = c.price + :price "
-			+ "WHERE c.productOption = :productOption and c.user = :user")
-	int updateQuantityByProductOptionAndUser(
-			@Param("productOption") ProductOption productOption,
+			+ "WHERE c.optionWithSize = :optionWithSize and c.user = :user")
+	int updateQuantityByOptionWithSizeAndUser(
+			@Param("optionWithSize") OptionWithSize optionWithSize,
 			@Param("user") User user,
 			@Param("quantity") int quantity,
 			@Param("price") float price);

@@ -1,14 +1,17 @@
 package com.backend.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity(name ="product_option")
@@ -33,11 +36,18 @@ public class ProductOption {
 	@Column(name="number_of_image")
 	private int numberOfImage;
 	
+	@Column(name="link")
+	private String link;
+	
 	@JsonIgnoreProperties("productOptions")
 	@ManyToOne
 	@JoinColumn(name ="product_id")
 	private Product product;
 
+	@JsonIgnoreProperties("productOption")
+	@OneToMany(mappedBy = "productOption")
+	private List<OptionWithSize> optionWithSizes;
+	
 	
 	public int getNumberOfImage() {
 		return numberOfImage;
@@ -93,6 +103,22 @@ public class ProductOption {
 
 	public void setColor(String color) {
 		this.color = color;
+	}
+
+	public List<OptionWithSize> getOptionWithSizes() {
+		return optionWithSizes;
+	}
+
+	public void setOptionWithSizes(List<OptionWithSize> optionWithSizes) {
+		this.optionWithSizes = optionWithSizes;
+	}
+
+	public String getLink() {
+		return link;
+	}
+
+	public void setLink(String link) {
+		this.link = link;
 	}
 	
 }

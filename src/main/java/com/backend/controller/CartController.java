@@ -22,10 +22,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.entity.Cart;
-import com.backend.entity.ProductOption;
+import com.backend.entity.OptionWithSize;
 import com.backend.entity.User;
 import com.backend.service.CartService;
-import com.backend.service.ProductOptionService;
+import com.backend.service.OptionWithSizeService;
 import com.backend.service.UserService;
 
 @Controller
@@ -37,11 +37,14 @@ public class CartController {
 	@Autowired
 	private CartService cartService;
 	
-	@Autowired
-	private ProductOptionService productOptionService;
+//	@Autowired
+//	private ProductOptionService productOptionService;
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private OptionWithSizeService optionWithSizeService;
 	
 	@GetMapping("")
 	public List<Cart> get(){
@@ -57,38 +60,38 @@ public class CartController {
 	}
 	
 	
-	// productOtion id 
+	// optionWithSize id 
 	@PutMapping("/{id}")
 	public List<Cart> cartAdd(@PathVariable("id") int id){
-		Optional<ProductOption> productOpt = productOptionService.findById(id);
-		if(productOpt.isPresent())
+		Optional<OptionWithSize> optionWithSizeOpt = optionWithSizeService.findById(id);
+		if(optionWithSizeOpt.isPresent() && optionWithSizeOpt.get().getQuantity() > 0)
 		{
-			ProductOption product = productOpt.get();
+			OptionWithSize optionWithSize = optionWithSizeOpt.get();
 			SecurityContext securityContext = SecurityContextHolder.getContext();
 			List<Cart> cartList = null;
 			// if cart was added by a guest
 			if(securityContext.getAuthentication() instanceof AnonymousAuthenticationToken) {
-				cartList = addCartByGuest(product);
+				cartList = addCartByGuest(optionWithSize);
 			}
 			else // if cart was added by 
 			{
-				cartList = addCartByUser(product);
+				cartList = addCartByUser(optionWithSize);
 			}
 			return cartList;
 		}
 		throw new IllegalArgumentException(); // if product doesn't exist
 	}
 	// add cart and return cart list
-	public List<Cart> addCartByGuest(ProductOption product){
+	public List<Cart> addCartByGuest(OptionWithSize optionWithSize){
 		String ip = userService.getClientIpAddr();
-		Cart cart = cartService.getCartByGuest(product, ip); // it could be null
-		if(cart != null) // if it exist then + 1 quantity
+		Cart cart = cartService.getCartByGuest(optionWithSize, ip); // it could be null
+		if(cart!= null && cart.getQuantity() < 10)
 		{
 			cart.setQuantity(cart.getQuantity() + 1);
 		}
-		else 
+		if(cart == null)
 		{
-			cart = new Cart(product, ip);
+			cart = new Cart(optionWithSize, ip);
 		}
 		cartService.save(cart);
 		return cartService.getCartsBySessionId(ip);
@@ -96,46 +99,44 @@ public class CartController {
 	
 	
 	// add cart and return cart list
-	public List<Cart> addCartByUser(ProductOption product){
+	public List<Cart> addCartByUser(OptionWithSize optionWithSize){
 		User user = userService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
-		Cart cart = cartService.getCartByUser(product, user); //it could be null
-		if(cart != null) {
+		Cart cart = cartService.getCartByUser(optionWithSize, user); //it could be null
+		if(cart != null && cart.getQuantity() < 10)
+		{
 			cart.setQuantity(cart.getQuantity() + 1);
 		}
-		else 
+		if(cart == null) 
 		{
-			cart = new Cart(product, user);
+			cart = new Cart(optionWithSize, user);
 		}
 		cartService.save(cart);
 		return cartService.getCartsByUser(user);
 	}
-	
-	
 	// cart id 
 	@DeleteMapping("/minus-quantity/{id}")
 	public List<Cart> cartRemove(@PathVariable("id")int id){
-		Optional<ProductOption> productOpt = productOptionService.findById(id);
-		if(productOpt.isPresent()) {
-			ProductOption product = productOpt.get();
+		Optional<OptionWithSize> optionWithSizeOpt = optionWithSizeService.findById(id);
+		if(optionWithSizeOpt.isPresent()) {
+			OptionWithSize optionWithSize = optionWithSizeOpt.get();
 			SecurityContext securityContext = SecurityContextHolder.getContext();
 			List<Cart> cartList = null;
 			// if cart was added by a guest
 			if(securityContext.getAuthentication() instanceof AnonymousAuthenticationToken) {
-				
-				cartList = removeCartByGuest(product);
+				cartList = minusOneQuantityByGuest(optionWithSize);
 			}
 			else // if cart was added by 
 			{
-				cartList = removeCartByUser(product);
+				cartList = minusOneQuantityByUser(optionWithSize);
 			}
 			return cartList;
 		}
 		throw new IllegalArgumentException();
 	}
 	
-	public List<Cart> removeCartByGuest(ProductOption product){
+	public List<Cart> minusOneQuantityByGuest(OptionWithSize optionWithSize){
 		String ip = userService.getClientIpAddr();
-		Cart cart = cartService.getCartByGuest(product, ip); // it could be null
+		Cart cart = cartService.getCartByGuest(optionWithSize, ip); // it could be null
 		if(cart != null) // if it exist then - 1 quantity
 		{
 			cart.setQuantity(cart.getQuantity() - 1);
@@ -148,9 +149,9 @@ public class CartController {
 		return cartService.getCartsBySessionId(ip);
 	}
 	
-	public List<Cart> removeCartByUser(ProductOption product){
+	public List<Cart> minusOneQuantityByUser(OptionWithSize optionWithSize){
 		User user = userService.getUser(SecurityContextHolder.getContext().getAuthentication().getName());
-		Cart cart = cartService.getCartByUser(product, user); //it could be null
+		Cart cart = cartService.getCartByUser(optionWithSize, user); //it could be null
 		if(cart != null) {
 			cart.setQuantity(cart.getQuantity() - 1);
 			if(cart.getQuantity() > 0)
@@ -163,7 +164,7 @@ public class CartController {
 	}
 	
 	
-	@DeleteMapping("/{id}") // idCart not id ProductOption
+	@DeleteMapping("/{id}") // cart id
 	public List<Cart> removeAllQuantityCart(@PathVariable("id") int id){
 		SecurityContext securityContext = SecurityContextHolder.getContext();
 		List<Cart> cartList = null;
@@ -219,9 +220,6 @@ public class CartController {
 				{
 					// when user carts exist then update the quantity of user carts based on guest carts
 					mergeGuestCartIntoUserCart2(guestCartList, user);
-					
-					//deprecated
-					//mergeGuestCartListToUserCartList(guestCartList, userCartList, user);
 				}
 				res.put("message", "yes");
 			}
@@ -236,16 +234,16 @@ public class CartController {
 	}
 	
 	
-	@Transactional
+	@Transactional(rollbackOn=Exception.class)
 	public void mergeGuestCartIntoUserCart2(List<Cart> guestCartList,User user) {
 		int length = guestCartList.size();
 		for(int i = 0 ; i < length ; i++) 
 		{
 			Cart cart = guestCartList.get(i);
-			ProductOption productOption = cart.getProductOption();
+			OptionWithSize optionWithSize = cart.getOptionWithSize();
 			int quantity = cart.getQuantity();
 			float price = cart.getPrice();
-			int updateRowCount = cartService.updateQuantityByProductOptionAndUser(productOption, user, quantity, price);
+			int updateRowCount = cartService.updateQuantityByProductOptionAndUser(optionWithSize, user, quantity, price);
 			if(updateRowCount == 1) // if there is a cart in user that has same product option and it was updated successfully
 			{
 				cartService.delete(cart);
@@ -257,36 +255,6 @@ public class CartController {
 			else {
 				// if update more than 1 row then something really bad happened
 				throw new TransactionException("Something wrong happened!");
-			}
-		}
-	}
-	
-	// it works but it is deprecated now!
-	// if interviewers read this then tell me which one is better, this one or above one.
-	public void mergeGuestCartListToUserCartList(List<Cart> guestCartList, List<Cart> userCartList, User user) {
-		int length = guestCartList.size();
-		int length2 = userCartList.size();
-		for(int i = 0; i < length; i++)
-		{
-			boolean duplicateCartProductOption = false;
-			int productOptionId = guestCartList.get(i).getProductOption().getId();
-			for(int j = 0 ; j < length2; j++)
-			{
-				if(productOptionId == userCartList.get(j).getProductOption().getId())
-				{
-					Cart cart = userCartList.get(j);
-					cart.setQuantity(cart.getQuantity() + guestCartList.get(i).getQuantity());
-					cartService.save(cart); // update cart
-					cartService.delete(guestCartList.get(i)); // delete guest cart;
-					duplicateCartProductOption = true;
-					break;
-				}
-			}
-			if(duplicateCartProductOption == false) {// if there is no duplicate then just set properties and update
-				Cart cart = guestCartList.get(i);
-				cart.setSessionId(null);
-				cart.setUser(user);
-				cartService.save(cart);
 			}
 		}
 	}

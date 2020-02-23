@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 public class UserOrderDetail {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	@ManyToOne
@@ -20,8 +20,8 @@ public class UserOrderDetail {
 	private UserOrder order;
 	
 	@ManyToOne
-	@JoinColumn(name = "product_option_id")
-	private ProductOption productOption;
+	@JoinColumn(name = "option_size_id")
+	private OptionWithSize optionWithSize;
 	
 	@Column(name ="quantity")
 	private int quantity;
@@ -35,11 +35,6 @@ public class UserOrderDetail {
 
 	public UserOrder getOrder() {
 		return order;
-	}
-
-
-	public ProductOption getProductOption() {
-		return productOption;
 	}
 
 	public int getQuantity() {
@@ -58,16 +53,20 @@ public class UserOrderDetail {
 		this.order = order;
 	}
 
-	public void setProductOption(ProductOption productOption) {
-		this.productOption = productOption;
-	}
-
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
 	}
 
 	public void setPrice(float price) {
 		this.price = price;
+	}
+
+	public OptionWithSize getOptionWithSize() {
+		return optionWithSize;
+	}
+
+	public void setOptionWithSize(OptionWithSize optionWithSize) {
+		this.optionWithSize = optionWithSize;
 	}
 	
 	

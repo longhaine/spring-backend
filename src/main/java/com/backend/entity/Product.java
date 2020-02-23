@@ -12,7 +12,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity(name ="product")
 public class Product {
@@ -30,6 +29,9 @@ public class Product {
 	@ManyToOne
 	@JoinColumn(name="subcategory_id")
 	private SubCategory subCategory;
+	
+	@Column(name="description")
+	private String description;
 	
 	// json ignore productOption.product
 	@JsonIgnoreProperties("product")
@@ -77,6 +79,14 @@ public class Product {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 

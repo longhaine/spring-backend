@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity(name ="address")
@@ -25,7 +24,7 @@ public class Address {
 	private String address;
 	
 	@Column(name = "phone")
-	private int phone;
+	private String phone;
 	
 	@Column(name = "selected")
 	private int selected;
@@ -43,7 +42,7 @@ public class Address {
 		return address;
 	}
 
-	public int getPhone() {
+	public String getPhone() {
 		return phone;
 	}
 
@@ -59,7 +58,7 @@ public class Address {
 		this.address = address;
 	}
 
-	public void setPhone(int phone) {
+	public void setPhone(String phone) {
 		this.phone = phone;
 	}
 

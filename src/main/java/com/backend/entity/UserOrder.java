@@ -1,18 +1,24 @@
 package com.backend.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity(name = "user_order")
 public class UserOrder {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 	
 	@Column(name = "order_number")
@@ -35,6 +41,16 @@ public class UserOrder {
 	
 	@Column(name = "date")
 	private String date;
+	
+	@Column(name = "shipping")
+	private float shipping;
+	
+	@Column(name = "status")
+	private String status;
+	
+	@JsonIgnoreProperties("order")
+	@OneToMany(mappedBy = "order")
+	private List<UserOrderDetail> orderDetails;
 	
 	@ManyToOne
 	@JoinColumn(name ="user_id")
@@ -113,5 +129,30 @@ public class UserOrder {
 	public void setOrderNumber(int orderNumber) {
 		this.orderNumber = orderNumber;
 	}
+
+	public List<UserOrderDetail> getOrderDetails() {
+		return orderDetails;
+	}
+
+	public void setOrderDetails(List<UserOrderDetail> orderDetails) {
+		this.orderDetails = orderDetails;
+	}
+
+	public float getShipping() {
+		return shipping;
+	}
+
+	public void setShipping(float shipping) {
+		this.shipping = shipping;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
 	
 }

@@ -1,6 +1,7 @@
 package com.backend.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
@@ -17,4 +18,6 @@ public interface ProductRepository extends CrudRepository<Product, Integer>{
 	value ="SELECT p.* FROM product p WHERE p.subcategory_id = :#{#subCategory.id} AND (p.gender = :gender OR p.gender = 'both')"
 	,nativeQuery=true)
 	List<Product> findByGenderAndSubCategory(@Param("gender")String gender,@Param("subCategory")SubCategory subCategory);
+	
+	Optional<Product> findByProductOptionsLink(String link);
 }

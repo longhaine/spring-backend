@@ -6,10 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.backend.entity.Cart;
-import com.backend.entity.ProductOption;
+import com.backend.entity.OptionWithSize;
 import com.backend.entity.User;
 import com.backend.repository.CartRepository;
-import com.backend.repository.CategoryRepository;
 
 @Service
 public class CartService {
@@ -21,7 +20,7 @@ public class CartService {
 		return cartRepository.findBySessionId(sessionId);
 	}
 	public List<Cart> getCartsByUser(User user){
-		return cartRepository.findByUser(user);
+		return cartRepository.getCartsByUser(user);
 	}
 	public Cart save(Cart cart) {
 		return cartRepository.save(cart);
@@ -29,11 +28,11 @@ public class CartService {
 	public void delete(Cart cart) {
 		cartRepository.delete(cart);
 	}
-	public Cart getCartByGuest(ProductOption productOption, String sessionId) {
-		return cartRepository.findByProductOptionAndSessionId(productOption, sessionId);
+	public Cart getCartByGuest(OptionWithSize optionWithSize, String sessionId) {
+		return cartRepository.findByOptionWithSizeAndSessionId(optionWithSize, sessionId);
 	}
-	public Cart getCartByUser(ProductOption productOption,User user) {
-		return cartRepository.findByProductOptionAndUser(productOption, user);
+	public Cart getCartByUser(OptionWithSize optionWithSize,User user) {
+		return cartRepository.findByOptionWithSizeAndUser(optionWithSize, user);
 	}
 	public Cart getCartByIdAndIp(int id, String ip) {
 		return cartRepository.findByIdAndSessionId(id, ip);
@@ -46,7 +45,7 @@ public class CartService {
 		cart.setUser(user);
 		cartRepository.save(cart);
 	}
-	public int updateQuantityByProductOptionAndUser(ProductOption productOption, User user, int quantity, float price) {
-		return cartRepository.updateQuantityByProductOptionAndUser(productOption, user, quantity, price);
+	public int updateQuantityByProductOptionAndUser(OptionWithSize optionWithSize, User user, int quantity, float price) {
+		return cartRepository.updateQuantityByOptionWithSizeAndUser(optionWithSize, user, quantity, price);
 	}
 }
