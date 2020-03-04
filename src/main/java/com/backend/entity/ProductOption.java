@@ -27,6 +27,9 @@ public class ProductOption {
 	@Column(name ="color")
 	private String color;
 	
+	@Column(name = "group_color")
+	private String groupColor;
+	
 	@Column(name ="price")
 	private float price;
 	
@@ -119,6 +122,14 @@ public class ProductOption {
 
 	public void setLink(String link) {
 		this.link = link;
+	}
+
+	public String getGroupColor() {
+		return groupColor;
+	}
+
+	public void setGroupColor(String groupColor) {
+		this.groupColor = groupColor;
 	}
 	
 }

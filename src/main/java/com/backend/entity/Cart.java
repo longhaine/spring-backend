@@ -10,6 +10,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.PrePersist;
 import javax.persistence.PreUpdate;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 @Entity(name ="cart")
 public class Cart {
 	
@@ -69,6 +72,7 @@ public class Cart {
 		return price;
 	}
 
+	@JsonIgnore
 	public User getUser() {
 		return user;
 	}

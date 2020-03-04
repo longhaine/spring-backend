@@ -113,18 +113,18 @@ public class PermitController {
 	@Autowired
 	private OptionWithSizeRepository optionWithSizeRepository;
 	
-//	@GetMapping("/add") this request only for adding size for product 
+//	@GetMapping("/add") //this request only for adding size for product 
 	public void add() {
 		int count = 0;
 		List<OptionWithSize> optionWithSizes = new ArrayList<>();
-		for(int j = 8 ; j < 18 ;j++ ) { // size range for particular products, see in database
-			Size size = (sizeRepository.findById(j)).get();
+		for(int i = 42 ; i < 43 ;i++ ) { // size range for particular products, see in database
+			Size size = (sizeRepository.findById(i)).get();
 			OptionWithSize optionWithSize = new OptionWithSize();
 			optionWithSize.setSize(size);
 			optionWithSizes.add(optionWithSize);
 		}
 		int length2 = optionWithSizes.size();
-		for(int i = 17; i < 23 ; i++) // range of products that list of size above apply to
+		for(int i = 32; i < 40 ; i++) // range of products that list of size above apply to
 		{
 			Product product = (productRepository.findById(i)).get();
 			List<ProductOption> productOptions = product.getProductOptions();

@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity(name = "user_order")
@@ -72,6 +73,7 @@ public class UserOrder {
 		return phone;
 	}
 
+	@JsonIgnore
 	public User getUser() {
 		return user;
 	}
