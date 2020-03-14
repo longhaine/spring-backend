@@ -15,9 +15,16 @@ import com.backend.entity.SubCategory;
 public interface ProductRepository extends CrudRepository<Product, Integer>{
 	
 	@Query(
+	value = "SELECT * FROM `product` WHERE gender = :gender ORDER BY subcategory_id ASC"
+	,nativeQuery=true)
+	List<Product> findAllByGenderAsc(@Param("gender") String gender);
+	
+	@Query(
 	value ="SELECT p.* FROM product p WHERE p.subcategory_id = :#{#subCategory.id} AND (p.gender = :gender OR p.gender = 'both')"
 	,nativeQuery=true)
 	List<Product> findByGenderAndSubCategory(@Param("gender")String gender,@Param("subCategory")SubCategory subCategory);
 	
 	Optional<Product> findByProductOptionsLink(String link);
+	
+	
 }

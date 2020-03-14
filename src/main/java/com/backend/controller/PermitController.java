@@ -3,15 +3,21 @@ package com.backend.controller;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,14 +25,17 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.backend.entity.Category;
 import com.backend.entity.OptionWithSize;
 import com.backend.entity.Product;
 import com.backend.entity.ProductOption;
 import com.backend.entity.Size;
 import com.backend.entity.SubCategory;
+import com.backend.entity.SubCategoryView;
 import com.backend.repository.OptionWithSizeRepository;
 import com.backend.repository.ProductRepository;
 import com.backend.repository.SizeRepository;
+import com.backend.repository.SubCategoryRepository;
 import com.backend.service.CategoryService;
 import com.backend.service.ProductService;
 import com.backend.service.SubCategoryService;
@@ -53,28 +62,45 @@ public class PermitController {
 	String regex = "^(.+)@(.+)$";
 	Pattern pattern = Pattern.compile(regex);
 	
+	@Cacheable("header")
 	@GetMapping("/header")
 	public Map<String, Object> category(){
 		return categoryService.loadHeader();
 	}
 	
-
+	Set<String> subCategoriesHaveHyphen = new HashSet<>(Arrays.asList("t-shirts","best-sellers"));
+	Set<String> featured = new HashSet<>(Arrays.asList("new arrivals","best-sellers","all"));
+	@Cacheable(value="subCategoryByGender",key="#gender + #subCategoryName")
 	@GetMapping("/productByGenderAndSubcategory/{gender}/{subCategoryName}")
-	public List<Product> productByGenderAndSubcategory(@PathVariable("gender")String gender, @PathVariable("subCategoryName")String subCategoryName){
+	public Object productByGenderAndSubcategory(@PathVariable("gender")String gender, @PathVariable("subCategoryName")String subCategoryName){
 		try {
-			// because T-shirts has '-'
-			if(!subCategoryName.equals("T-Shirts")) {
+			// because T-shirts, Best-Sellers has '-'
+			if(subCategoriesHaveHyphen.contains(subCategoryName) == false) {
 				subCategoryName = subCategoryName.replace("-"," ");
 			}
-			SubCategory subCategory = subCategoryService.findByGenderAndName(gender, subCategoryName);
-			return productRepository.findByGenderAndSubCategory(gender, subCategory);
+			subCategoryName = subCategoryName.toLowerCase();
+			if(featured.contains(subCategoryName)) {
+				if(subCategoryName.equals("all"))
+				{
+					return subCategoryService.findAllByGender(gender);
+				}
+				else {
+					return subCategoryService.getWomenTop10Product();
+				}
+			}
+			else {
+				SubCategory subCategory = subCategoryService.findByGenderAndName(gender, subCategoryName);
+				return productRepository.findByGenderAndSubCategory(gender, subCategory);
+			}
 		}
 		catch(Exception e) {
 			throw new IllegalArgumentException();
 		}
 	}
+	
+	@Cacheable(value="sideNav",key="#gender")
 	@GetMapping("/sideSubCategoryByGender/{gender}")
-	public List<SubCategory> loadSideSubCategoryByGender(@PathVariable("gender")String gender){
+	public List<SubCategoryView> loadSideSubCategoryByGender(@PathVariable("gender")String gender){
 		if(gender.equals("men") || gender.equals("women")) {
 			return subCategoryService.loadSideSubCategoryByGender(gender);
 		}
@@ -105,6 +131,13 @@ public class PermitController {
 			return productOpt.get();
 		}
 		throw new IllegalArgumentException();
+	}
+	
+	@Autowired
+	private SubCategoryRepository subcategoryRepository;
+	@GetMapping("/test/{id}")
+	public Object test(@PathVariable("id")int id) {
+		return subcategoryRepository.findByProductsProductOptionsId(id);
 	}
 	
 	@Autowired

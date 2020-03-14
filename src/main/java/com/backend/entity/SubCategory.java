@@ -1,5 +1,7 @@
 package com.backend.entity;
 
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -8,8 +10,10 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity(name = "subcategory")
 public class SubCategory {
@@ -24,12 +28,14 @@ public class SubCategory {
 	@Column(name = "gender")
 	private String gender;
 	
-	@JsonBackReference
+	@JsonIgnoreProperties("subCategories")
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name ="category_id")
 	private Category category;
 
-
+	@JsonIgnoreProperties("subCategory")
+	@OneToMany(mappedBy = "subCategory")
+	private List<Product> products;
 
 	public String getGender() {
 		return gender;
@@ -64,6 +70,14 @@ public class SubCategory {
 
 	public void setCategory(Category category) {
 		this.category = category;
+	}
+
+	public List<Product> getProducts() {
+		return products;
+	}
+
+	public void setProducts(List<Product> products) {
+		this.products = products;
 	}
 	
 	

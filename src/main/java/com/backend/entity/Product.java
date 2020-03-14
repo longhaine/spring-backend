@@ -26,6 +26,7 @@ public class Product {
 	@Column(name="gender")
 	private String gender;
 	
+	@JsonIgnoreProperties("products")
 	@ManyToOne
 	@JoinColumn(name="subcategory_id")
 	private SubCategory subCategory;

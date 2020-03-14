@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity(name = "category")
@@ -33,7 +34,8 @@ public class Category {
 		this.name = name;
 		this.subCategories = new ArrayList<SubCategory>();
 	}
-	@JsonManagedReference
+	
+	@JsonIgnoreProperties({"category","products"})
 	@OneToMany(mappedBy = "category",cascade = CascadeType.ALL,fetch=FetchType.LAZY)
 	private List<SubCategory> subCategories;
 	
