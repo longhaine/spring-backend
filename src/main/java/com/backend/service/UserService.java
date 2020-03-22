@@ -68,9 +68,12 @@ public class UserService {
 		// check RestResponseEntityExceptionHandler there is a handler for bad credential exception
 		authenticate(user);
 		//
+		return generateLoginInfo(user.getEmail());
+	}
+	public Map<String,Object> generateLoginInfo(String email){
 		Map<String, Object> res = new HashMap<String, Object>();
-		res.put("token", jwtProvider.generateToken(user.getEmail()));
-		res.put("user",getUserBasicInfo(user.getEmail()));
+		res.put("token", jwtProvider.generateToken(email));
+		res.put("user",getUserBasicInfo(email));
 		return res;
 	}
 	public Map<String, Object> getUserBasicInfo(String email){

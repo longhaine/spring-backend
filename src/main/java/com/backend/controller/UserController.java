@@ -3,6 +3,7 @@ package com.backend.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.backend.entity.User;
+import com.backend.entity.UserForget;
+import com.backend.service.UserForgetService;
 import com.backend.service.UserService;
 
 @Controller
@@ -30,6 +33,9 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private UserForgetService userForgetService;
 	
 	String regex = "^(.+)@(.+)$";
 	Pattern pattern = Pattern.compile(regex);
@@ -55,7 +61,6 @@ public class UserController {
 	public Map<String, Object> info(@PathVariable String email){
 		try {
 			SecurityContext securityContext = SecurityContextHolder.getContext();
-			System.out.println(securityContext.getAuthentication().getName());
 			return userService.getUserBasicInfo(email);
 		}
 		catch(Exception ex) {
@@ -82,9 +87,24 @@ public class UserController {
 			res.put("fullName", userNewInfo.getFullName());
 		}
 		catch(Exception ex){
-			System.out.println(ex.getMessage());
 			throw ex;
 		}
 		return res;
+	}
+	
+	@PostMapping("/reset-password/{hashedPath}")
+	public Map<String,Object> resetPassword(@PathVariable String hashedPath,@RequestBody Map<String, String> payload) {
+		Optional<UserForget> forgetOpt = userForgetService.findByPath(hashedPath);
+		if(forgetOpt.isPresent()) {
+			UserForget forget = forgetOpt.get();
+			User user = forget.getUser();
+			String password = payload.get("password");
+			user.setPassword(passwordEncoder.encode(password));
+			userForgetService.delete(forget);
+			return userService.generateLoginInfo(user.getEmail());
+		}
+		else {
+			throw new IllegalArgumentException();
+		}
 	}
 }

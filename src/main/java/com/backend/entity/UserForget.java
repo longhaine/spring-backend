@@ -22,9 +22,6 @@ public class UserForget{
 	
 	@Column(name ="path")
 	private String path;
-	
-	@Column(name ="date")
-	private String date;
 
 	public User getUser() {
 		return user;
@@ -32,10 +29,6 @@ public class UserForget{
 
 	public String getPath() {
 		return path;
-	}
-
-	public String getDate() {
-		return date;
 	}
 
 	public void setUser(User user) {
@@ -46,9 +39,7 @@ public class UserForget{
 		this.path = path;
 	}
 
-	public void setDate(String date) {
-		this.date = date;
-	}
+
 	
 	
 }

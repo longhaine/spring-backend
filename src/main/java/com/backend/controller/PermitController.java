@@ -14,6 +14,7 @@ import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,6 +40,7 @@ import com.backend.repository.SubCategoryRepository;
 import com.backend.service.CategoryService;
 import com.backend.service.ProductService;
 import com.backend.service.SubCategoryService;
+import com.backend.service.UserForgetService;
 import com.backend.service.UserService;
 
 @Controller
@@ -55,9 +57,12 @@ public class PermitController {
 	private ProductRepository productRepository;
 	@Autowired
 	private ProductService productService;
-	
+	@Autowired
+	private UserForgetService userForgetService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private HttpServletRequest request;
 	
 	String regex = "^(.+)@(.+)$";
 	Pattern pattern = Pattern.compile(regex);
@@ -68,8 +73,8 @@ public class PermitController {
 		return categoryService.loadHeader();
 	}
 	
-	Set<String> subCategoriesHaveHyphen = new HashSet<>(Arrays.asList("t-shirts","best-sellers"));
-	Set<String> featured = new HashSet<>(Arrays.asList("new arrivals","best-sellers","all"));
+	Set<String> subCategoriesHaveHyphen = new HashSet<>(Arrays.asList("t-shirts","best-sellers","new-arrivals","back-in-stock"));
+	Set<String> featured = new HashSet<>(Arrays.asList("back-in-stock","new-arrivals","best-sellers","all"));
 	@Cacheable(value="subCategoryByGender",key="#gender + #subCategoryName")
 	@GetMapping("/productByGenderAndSubcategory/{gender}/{subCategoryName}")
 	public Object productByGenderAndSubcategory(@PathVariable("gender")String gender, @PathVariable("subCategoryName")String subCategoryName){
@@ -84,14 +89,23 @@ public class PermitController {
 				{
 					return subCategoryService.findAllByGender(gender);
 				}
-				else {
-					return subCategoryService.getWomenTop10Product();
+				if(gender.equals("women")) {
+					if(subCategoryName.equals("best-sellers")) {
+						return subCategoryService.getWomenTop10Product();
+					}
+					if(subCategoryName.equals("new-arrivals")) {
+						return subCategoryService.getWomenNewArrivals();
+					}
+					if(subCategoryName.equals("back-in-stock")) {
+						return subCategoryService.getWomenBackInStock();
+					}
 				}
 			}
 			else {
 				SubCategory subCategory = subCategoryService.findByGenderAndName(gender, subCategoryName);
 				return productRepository.findByGenderAndSubCategory(gender, subCategory);
 			}
+			return Arrays.asList();
 		}
 		catch(Exception e) {
 			throw new IllegalArgumentException();
@@ -107,8 +121,14 @@ public class PermitController {
 		throw new IllegalArgumentException("there is no gender such as "+gender);
 	}
 	
-	
-	
+	@GetMapping("/send-reset-link/{email}")
+	public boolean sendResetLink(@PathVariable String email) {
+		return userForgetService.sendResetLink(email);
+	}
+	@GetMapping("/check-reset-link/{hashedPath}")
+	public boolean checkResetLink(@PathVariable String hashedPath) {
+		return userForgetService.checkResetLink(hashedPath);
+	}
 	@GetMapping("/find-email/{email}")
 	public Map<String, String> findEmail(@PathVariable String email){
 		// if email null or email doesn't match with regex

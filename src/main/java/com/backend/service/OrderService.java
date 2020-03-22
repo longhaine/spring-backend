@@ -2,6 +2,7 @@ package com.backend.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -48,7 +49,7 @@ public class OrderService {
 		User user = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
 		List<Cart> cartList = cartRepository.getCartsByUser(user);
 		order = save(order, user);
-		saveOrderDetails(cartList, order);
+		order.setOrderDetails(saveOrderDetails(cartList, order));
 		cartRepository.deleteAllCartsByUser(user);
 		return order;
 	}
@@ -61,7 +62,8 @@ public class OrderService {
 		order.setStatus("Processing");
 		return orderRepository.save(order);
 	}
-	public void saveOrderDetails(List<Cart> cartList, UserOrder order) {
+	public List<UserOrderDetail> saveOrderDetails(List<Cart> cartList, UserOrder order) {
+		List<UserOrderDetail> details = new LinkedList<UserOrderDetail>();
 		float totalPrice = 0;
 		int length = cartList.size();
 		if(length == 0 ) {
@@ -78,10 +80,11 @@ public class OrderService {
 			orderDetail.setOrder(order);
 			orderDetail.setPrice(price);
 			orderDetail.setOptionWithSize(cart.getOptionWithSize());
-			orderDetailRepository.save(orderDetail);
+			details.add(orderDetailRepository.save(orderDetail)); // save and add to list
 			totalPrice = totalPrice + price;
 		}
 		updateTotalPrice(order, totalPrice);
+		return details;
 	}
 	public int calculateQuantitySize(Cart cart){
 		int cartQuantity = cart.getQuantity();

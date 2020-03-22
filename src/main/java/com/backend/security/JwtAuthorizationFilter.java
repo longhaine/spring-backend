@@ -21,7 +21,7 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter{
 	@Autowired
 	private UserService userService;
 	
-	private final String[] pathShouldIgnor = {"/img","/permit","/user/login","/user/signup"};
+	private final String[] pathShouldIgnore = {"/img","/permit","/user/login","/user/signup","/user/reset-password"};
 	
 	@Override
 	protected void doFilterInternal(HttpServletRequest req, HttpServletResponse res, FilterChain filterChain)
@@ -55,10 +55,10 @@ public class JwtAuthorizationFilter extends OncePerRequestFilter{
 	}
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
-		int length = pathShouldIgnor.length;
+		int length = pathShouldIgnore.length;
 		String path = request.getServletPath();
 		for(int i = 0 ; i < length ; i++) {
-			if(path.contains(pathShouldIgnor[i])) {
+			if(path.contains(pathShouldIgnore[i])) {
 				return true;
 			}
 		}

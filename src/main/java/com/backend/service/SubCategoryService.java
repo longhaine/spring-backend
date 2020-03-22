@@ -16,6 +16,8 @@ import com.backend.repository.SubCategoryRepository;
 @Service
 public class SubCategoryService {
 	private int[] womenTop10Product = {22,19,3,18,10,35,30,16,8,27};
+	private int[] womenNewArrivals = {18,21,24,15,1};
+	private int[] womenBackInStock = {14,10,35,22,30,27};
 	@Autowired
 	private SubCategoryRepository subCategoryRepository;
 	public List<SubCategory> findAllByGender(String gender){
@@ -40,7 +42,22 @@ public class SubCategoryService {
 		}
 		return list;
 	}
-	
+	public List<SubCategory> getWomenNewArrivals(){
+		List<SubCategory> list = new LinkedList<SubCategory>();
+		int length = womenNewArrivals.length;
+		for(int i = 0 ; i < length ; i++) {
+			list.add(subCategoryRepository.findByProductsProductOptionsId(womenNewArrivals[i]));
+		}
+		return list;
+	}
+	public List<SubCategory> getWomenBackInStock(){
+		List<SubCategory> list = new LinkedList<SubCategory>();
+		int length = womenBackInStock.length;
+		for(int i = 0 ; i < length ; i++) {
+			list.add(subCategoryRepository.findByProductsProductOptionsId(womenBackInStock[i]));
+		}
+		return list;
+	}
 	public List<SubCategoryView> loadSideSubCategoryByGender(String gender){
 		return subCategoryRepository.findByGenderOrGenderAndCategoryNameIsNotLike(gender, "both", "Featured");
 	}
